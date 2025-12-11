@@ -1,0 +1,22 @@
+[project]
+name = "fastapi-til"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "shincc6500",email = "130081283+shincc6500@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi (>=0.123.5,<0.124.0)",
+    "uvicorn[standard] (>=0.38.0,<0.39.0)",
+    "py-ulid (>=1.0.3,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
