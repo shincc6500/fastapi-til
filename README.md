@@ -1,5 +1,6 @@
 # fastapi-til
 FastAPI 기반의 '오늘 배운 내용(TIL)' 기록 시스템입니다. 클린 아키텍처를 준수하여 유지보수와 확장이 용이하게 설계되었습니다.
+교제 제공 예제 깃허브 : https://github.com/dextto/fastapi-ca
 
 ## 🛠 기술 스택
 - **Framework:** FastAPI
