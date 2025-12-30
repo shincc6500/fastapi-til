@@ -1,6 +1,10 @@
-from fastapi import APIRouter
-from pydantic  import BaseModel
 
+from dependency_injector.wiring import inject, Provide
+from fastapi import APIRouter, Depends
+
+from pydantic import BaseModel
+
+# from containers import Container
 from user.application.user_service import UserService
 
 router = APIRouter(prefix="/users") # 이 파일에 있는 모든 API는 /users 로 경로가 시작됨. 
@@ -13,11 +17,15 @@ class CreateUserBody(BaseModel):
 
 
 @router.post("", status_code=201) # /user 경로로 post 메서드를 통해 요청 받을 수 있음. 성공시 201 반환
-def create_user(user: CreateUserBody):
+@inject
+def create_user(
+    user: CreateUserBody,
+    user_service: UserService = Depends(Provide["user_service"]),
+):
     """
     user 생성용 API 
     """
-    user_service = UserService()
+    
     created_user = user_service.create_user(
         name=user.name,
         email=user.email, 

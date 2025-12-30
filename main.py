@@ -1,13 +1,23 @@
+
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 import uvicorn
 
-from user.interface.controllers.user_controller import router as user_routers
+from containers import Container
+from user.interface.controllers import user_controller
+
+container = Container()
+
+# FastAPI와 느슨한 결합 구조를 위한 와이어링 제어
+container.wire(packages=["user"]) 
 
 app = FastAPI()
-app.include_router(user_routers)
+app.container= container
+
+app.include_router(user_controller.router)
+
 
 @app.exception_handler(RequestValidationError) # RequestValidationError 발생시 에러 핸들러 등록
 async def validation_exception_handler(

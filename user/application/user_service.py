@@ -1,17 +1,27 @@
+from typing import Annotated
 from ulid import ULID
 from datetime import datetime
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
+from dependency_injector.wiring import inject, Provide
 
 from user.domain.user import User
 from user.domain.repository.user_repo import IUserRepository
-from user.infra.repository.user_repo import UserRepository
 
 from utils.crypto import Crypto
 
+# from Containers import containser를 사용할 경우 컨테이너와 userservice 클래스를 순환 참조하게 되어 오류가 발생. 
+
 class UserService:
-    def __init__(self):
+    @inject
+    def __init__(
+            self,
+            user_repo: IUserRepository = Depends(
+                Provide["user_repo"] 
+                ),
+            ):
         # 현재 합성 방식으로 구현, 나중에 의존성 주입 방식으로 수정. 
-        self.user_repo: IUserRepository = UserRepository() 
+        print("의존성 주입 테스트")
+        self.user_repo =user_repo
         self.ulid = ULID()
         self.crypto = Crypto()
 

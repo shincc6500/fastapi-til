@@ -35,7 +35,7 @@ class UserRepository(IUserRepository):
         """
         이메일 기반 유저 조회 매서드
         """
-        with SessionLocal as db:
+        with SessionLocal() as db:
             user = db.query(User).filter(User.email == email).first()
         
         if not user: 
