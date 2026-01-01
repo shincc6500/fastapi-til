@@ -10,8 +10,11 @@ from user.interface.controllers import user_controller
 
 container = Container()
 
-# FastAPI와 느슨한 결합 구조를 위한 와이어링 제어
-container.wire(packages=["user"]) 
+'''
+FastAPI와 느슨한 결합 구조를 위한 와이어링 제어
+conatiners.py 안의 wiring_config의 packages 목록을 대상으로 의존성 주입 실행
+'''
+container.wire() 
 
 app = FastAPI()
 app.container= container

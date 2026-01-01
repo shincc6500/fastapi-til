@@ -28,6 +28,7 @@ class IUserRepository(metaclass=ABCMeta):
         """
         raise NotImplementedError
     
+    @abstractmethod
     def find_by_email(self, email: str) -> User:
         """
         이메일로 유저를 검색 
@@ -47,4 +48,61 @@ class IUserRepository(metaclass=ABCMeta):
         NotImplementedError
             하위 클래스에서 반드시 구현해야 함
         """
+        raise NotImplementedError
+    
+    @abstractmethod
+    def find_by_id(self, id: str) -> User:
+        """
+        id로 유저를 검색 
+        Parameters
+        ----------
+        self : object
+           호출한 인스턴스 자신
+        id : str
+            검색에 사용할 유저의 id ULID
+        Returns
+        --------
+        User : object
+           조회된 유저 도메인 모델 객체
+
+        Raises
+        ------
+        NotImplementedError
+            하위 클래스에서 반드시 구현해야 함
+        """
+        raise NotImplementedError
+    
+    @abstractmethod
+    def update(self, user: User):
+        """
+        유저 정보 업데이트
+        Parameters
+        ----------
+        self : object
+           호출한 인스턴스 자신
+        user : User
+            수정할 유저 객체
+        
+        Raises
+        ------
+        NotImplementedError
+            하위 클래스에서 반드시 구현해야 함
+        """
+        raise NotImplementedError
+    
+    @abstractmethod
+    def get_users(self) -> list[User]:
+        '''
+        유저 리스트 출력
+        Parameters
+        ----------
+        self : object
+           호출한 인스턴스 자신
+
+        Returns
+        --------
+        list[User]
+           조회된 모든 유저 도메인 모델 객체들의 리스트
+
+        '''
         raise NotImplementedError

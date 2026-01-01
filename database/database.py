@@ -5,6 +5,8 @@ from sqlalchemy.ext.declarative import declarative_base # 최신 버전에서는
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 
+# TODO: 현재 세션을 직접 생성중. get_db를 사용하여 의존성 주입 구조로 수정
+
 load_dotenv()
 
 # 환경 변수 읽기

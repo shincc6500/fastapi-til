@@ -30,6 +30,7 @@ class UserService:
             name: str,
             email: str,
             password: str,
+            memo: str | None= None,
         ):
         """
         새로운 유저를 생성합니다. 
@@ -57,9 +58,31 @@ class UserService:
             name = name,                
             email = email,
             password=self.crypto.encrypt(password),
+            memo=memo,
             created_at= now, 
             updated_at= now,
         )
         self.user_repo.save(user) # user_repo의 save 매서드를 이용하여 user 변수에 할당된 객체를 저장. 
 
         return user
+    
+    def update_user(
+            self,
+            user_id: str, 
+            name: str | None = None,
+            password: str | None= None,
+    ):
+        user = self.user_repo.find_by_id(user_id)
+
+        if name:
+            user.name = name
+        if password:
+            user.password=self.crypto.encrypt(password)
+        user.updated_at = datetime.now()
+
+        self.user_repo.update(user)
+
+        return user
+    
+    def get_users(self) -> list[User]:
+        return self.user_repo.get_users()
