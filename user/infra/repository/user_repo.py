@@ -82,8 +82,36 @@ class UserRepository(IUserRepository):
 
         return user
     
-    def get_users(self) -> list[UserV0]:
+    def get_users(self,
+                  page: int = 1,
+                  items_per_page: int = 10,) -> tuple[int,list[UserV0]] :
         with SessionLocal() as db:
-            users = db.query(User).all()
+            query = db.query(User)
+            total_count = query.count()
 
-        return [UserV0(**row_to_dict(user)) for user in users]
+            """
+            db.query(User)에 정렬 기준이 없어서 실무 기준으로 오류 발생할 수 있음. 
+            실무에서는 id 역순(최신순)으로 정렬 한 뒤에 offset, limit를 적용하는 것이 안전함. 
+            """
+
+            offset = (page -1) * items_per_page
+            users = query.limit(items_per_page).offset(offset).all()
+
+        return total_count, [UserV0(**row_to_dict(user)) for user in users]
+    
+    def delete(self, id: str):
+        with SessionLocal() as db:
+            user = db.query(User).filter(User.id == id).first()
+
+            """
+            TODO: 예외 처리 로직 계층 분리 (Refactoring Target)
+            - 현재: Infra 계층에서 HTTPException을 발생시킴.
+            - 문제: DB 로직이 HTTP 환경에 종속되어 재사용성(테스트, 백그라운드 작업)이 저하됨.
+            - 개선: 유저 미존재 시 None을 반환하거나 Domain Exception을 발생시키고, 
+                   오류 응답 제어는 Application 또는 Interface 계층에서 담당하도록 변경 예정.
+            """
+            if not user:
+                raise HTTPException(status_code=422)
+            
+            db.delete(user)
+            db.commit()

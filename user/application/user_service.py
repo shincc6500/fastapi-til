@@ -84,5 +84,13 @@ class UserService:
 
         return user
     
-    def get_users(self) -> list[User]:
-        return self.user_repo.get_users()
+    def get_users(self, page, items_per_page) -> tuple[int, list[User]]:
+        users = self. user_repo.get_users(page, items_per_page)
+        return users
+    
+    def delete_user(self, user_id: str):
+        #TODO: 유저 존재 여부 확인 후 없으면 오류 출력 코드 추가. 
+
+        self.user_repo.delete(user_id)
+
+        

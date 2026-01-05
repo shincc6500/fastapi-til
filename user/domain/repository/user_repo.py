@@ -91,18 +91,39 @@ class IUserRepository(metaclass=ABCMeta):
         raise NotImplementedError
     
     @abstractmethod
-    def get_users(self) -> list[User]:
+    def get_users(self, page: int, items_per_page: int) -> tuple[int, list[User]]:
         '''
-        유저 리스트 출력
+        유저 리스트를 페이징하여 출력
         Parameters
         ----------
         self : object
            호출한 인스턴스 자신
+        page : int
+            조회할 페이지 번호
+        items_per_page : int
+            페이지당 표시할 유저 수
 
         Returns
         --------
-        list[User]
-           조회된 모든 유저 도메인 모델 객체들의 리스트
-
+        tuple[int, list[User]]
+            (전체 유저 수 또는 총 페이지 수, 조회된 유저 객체 리스트) 형태의 튜플
+        
+        '''
+        raise NotImplementedError
+    
+    @abstractmethod
+    def delete(self, id: str):
+        '''
+        DB에서 유저 객체를 삭제
+        Parameters
+        ----------
+        self: object
+            호출한 인스턴스 자신
+        id : str
+            삭제할 user 객체의 id 값
+        ---------
+        raise
+        NotImplementedError
+            하위 클래스에서 반드시 구현해야 함
         '''
         raise NotImplementedError
