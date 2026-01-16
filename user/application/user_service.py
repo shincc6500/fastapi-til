@@ -1,13 +1,14 @@
 from typing import Annotated
 from ulid import ULID
 from datetime import datetime
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, status
 from dependency_injector.wiring import inject, Provide
 
 from user.domain.user import User
 from user.domain.repository.user_repo import IUserRepository
 
 from utils.crypto import Crypto
+from common.auth import create_access_token, Role
 
 # from Containers import containser를 사용할 경우 컨테이너와 userservice 클래스를 순환 참조하게 되어 오류가 발생. 
 
@@ -92,5 +93,20 @@ class UserService:
         #TODO: 유저 존재 여부 확인 후 없으면 오류 출력 코드 추가. 
 
         self.user_repo.delete(user_id)
+
+    def login(self, email: str, password: str):
+        user = self.user_repo.find_by_email(email) #이메일을 로그인 아이디로 사용
+
+        # DB에서 통과 하지 못할 시 에러 반환
+        if not self.crypto.verify(password, user.password):
+            raise HTTPException(statue_code=status.HTTP_401_UNAUTHORIZED)
+            
+        # id 기준으로 엑세스 토큰 발행
+        access_token = create_access_token(
+            payload={"user_id": user.id},
+            role = Role.USER, 
+            )
+        
+        return access_token
 
         
