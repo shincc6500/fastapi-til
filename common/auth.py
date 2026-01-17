@@ -7,12 +7,13 @@ from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated
 from jose import JWTError, jwt
-from dotenv import load_dotenv
 
-load_dotenv()
+from config import get_settings
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
+settings = get_settings()
+
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
 
 """
 3.11 버전부터 StrEnum을 지원하여, 코드를 수정. 

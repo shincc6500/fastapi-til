@@ -3,18 +3,19 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base # 최신 버전에서는 orm에서 가져오는것이 표준. 
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
+
+from config import get_settings
 
 # TODO: 현재 세션을 직접 생성중. get_db를 사용하여 의존성 주입 구조로 수정
 
-load_dotenv()
+settings = get_settings()
 
 # 환경 변수 읽기
-DB_TYPE = os.getenv("DB_TYPE")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_HOST = os.getenv("DB_HOST", "127.0.0.1") # 기본값 설정
-DB_NAME = os.getenv("DB_NAME")
+DB_TYPE = settings.DB_TYPE
+DB_USER = settings.DB_USER
+DB_PASSWORD = settings.DB_PASSWORD
+DB_HOST = settings.DB_HOST
+DB_NAME = settings.DB_NAME
 
 # URL 구성. 
 SQLALCHEMY_DATABASE_URL = f"mysql+mysqldb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"

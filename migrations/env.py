@@ -9,15 +9,16 @@ from dotenv import load_dotenv
 
 from database.database import Base # SQLAlchemy의 Base 클래스
 from database import database_models # 프로젝트에서 생성한 테이블
+from config import get_settings
 
-load_dotenv()
+settings = get_settings()
 
 # 환경 변수 읽기
-DB_TYPE = os.getenv("DB_TYPE")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_HOST = os.getenv("DB_HOST", "127.0.0.1") # 기본값 설정
-DB_NAME = os.getenv("DB_NAME")
+DB_TYPE = settings.DB_TYPE
+DB_USER = settings.DB_USER
+DB_PASSWORD = settings.DB_PASSWORD
+DB_HOST = settings.DB_HOST
+DB_NAME = settings.DB_NAME
 
 # URL 구성. 
 SQLALCHEMY_DATABASE_URL = f"mysql+mysqldb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
