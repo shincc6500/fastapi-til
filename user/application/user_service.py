@@ -90,16 +90,24 @@ class UserService:
         return users
     
     def delete_user(self, user_id: str):
-        #TODO: 유저 존재 여부 확인 후 없으면 오류 출력 코드 추가. 
+        # 유저 id를 조회 후 존재 하지 않는 경우 error 반환        
+        user = self.user_repo.find_by_id(user_id)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found")
 
         self.user_repo.delete(user_id)
 
     def login(self, email: str, password: str):
         user = self.user_repo.find_by_email(email) #이메일을 로그인 아이디로 사용
 
+        if not user or not self.crypto.verify(password, user.password):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="이메일 또는 비밀번호가 잘못되었습니다.")
+
         # DB에서 통과 하지 못할 시 에러 반환
         if not self.crypto.verify(password, user.password):
-            raise HTTPException(statue_code=status.HTTP_401_UNAUTHORIZED)
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="DB 조회값과 차이가 있습니다")
             
         # id 기준으로 엑세스 토큰 발행
         access_token = create_access_token(

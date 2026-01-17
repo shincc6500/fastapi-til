@@ -8,6 +8,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 # from containers import Container
 from user.application.user_service import UserService
+from common.auth import CurrentUser, get_current_user, get_admin_user
 
 router = APIRouter(prefix="/users") # 이 파일에 있는 모든 API는 /users 로 경로가 시작됨. 
 
@@ -17,7 +18,7 @@ class CreateUserBody(BaseModel):
     email : EmailStr = Field(max_length=64)
     password : str = Field(min_length=8, max_length=32)
 
-class UpdateUser(BaseModel):
+class UpdateUserBody(BaseModel):
     name : str | None = Field(min_length=2, max_length=32, default=None)
     password : str | None = Field(min_length=8, max_length=32, default=None)
 
@@ -47,17 +48,17 @@ def create_user(
 
     return created_user
 
-@router.put("/{user_id}")
+@router.put("", response_model=UserResponse)
 @inject 
 def update_user(
-    user_id : str,
-    user: UpdateUser, 
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    body: UpdateUserBody, 
     user_service: UserService = Depends(Provide["user_service"])
 ):
     user= user_service.update_user(
-        user_id=user_id,
-        name=user.name,
-        password=user.password,
+        user_id=current_user.id,
+        name=body.name,
+        password=body.password,
     )
 
     return user
@@ -68,6 +69,7 @@ def update_user(
 def get_users(
     page: int = 1,
     items_per_page: int = 10,
+    current_user: CurrentUser = Depends(get_admin_user),
     user_service: UserService = Depends(Provide["user_service"]),
 ):
     total_count, users = user_service.get_users(page, items_per_page)
@@ -81,12 +83,11 @@ def get_users(
 @router.delete("",status_code=204)
 @inject
 def delete_user(
-    user_id: str, 
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],    
     user_service:UserService = Depends(Provide["user_service"]),
 ):
-    # TODO: 다른 유저를 삭제할 수 없도록 토큰에서 유저 아이디를 구한다. 
-
-    user_service.delete_user(user_id)
+    user_service.delete_user(current_user.id)
+    
 
 @router.post("/login")
 @inject
