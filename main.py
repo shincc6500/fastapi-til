@@ -7,6 +7,7 @@ import uvicorn
 
 from containers import Container
 from user.interface.controllers import user_controller
+from note.interface.controllers import note_controller
 
 container = Container()
 
@@ -20,6 +21,7 @@ app = FastAPI()
 app.container= container
 
 app.include_router(user_controller.router)
+app.include_router(note_controller.router)
 
 
 @app.exception_handler(RequestValidationError) # RequestValidationError 발생시 에러 핸들러 등록
