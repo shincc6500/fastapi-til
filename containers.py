@@ -1,9 +1,10 @@
 from dependency_injector import containers, providers
+from fastapi import BackgroundTasks
 
 from user.infra.repository.user_repo import UserRepository
 from note.infra.repository.note_repo import NoteRepository
 
-from user.application.user_service import UserService
+from user.application.user_service import UserService, EmailService
 from note.application.note_service import NoteService
 
 class Container(containers.DeclarativeContainer):
@@ -19,7 +20,9 @@ class Container(containers.DeclarativeContainer):
     # Factory: 주입 요청 시마다 새로운 객체 인스턴스 생성
     # Singleton: 앱 생명주기 동안 단 하나의 객체 인스턴스만 생성 및 공유
     user_repo = providers.Factory(UserRepository)
-    user_service = providers.Factory(UserService, user_repo=user_repo)
+    user_service = providers.Factory(UserService, 
+                                     user_repo=user_repo,
+                                     email_service=EmailService)
     note_repo = providers.Factory(NoteRepository)
     note_service = providers.Factory(NoteService, note_repo=note_repo)
     

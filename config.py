@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
 
+    # email 서비스
+    EMAIL_PASSWORD: str
+
 settings = Settings()
 
 @lru_cache

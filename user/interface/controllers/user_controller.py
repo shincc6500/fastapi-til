@@ -1,6 +1,6 @@
 from datetime import datetime
 from dependency_injector.wiring import inject, Provide
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 
@@ -34,6 +34,7 @@ class UserResponse(BaseModel):
 @inject
 def create_user(
     user: CreateUserBody,
+    background_tasks: BackgroundTasks,
     user_service: UserService = Depends(Provide["user_service"]),
 )-> UserResponse:  # 타입 힌트 추가를 통한 문서화 기능
     """
@@ -41,6 +42,7 @@ def create_user(
     """
     
     created_user = user_service.create_user(
+        background_tasks=background_tasks,
         name=user.name,
         email=user.email, 
         password=user.password,
@@ -101,4 +103,5 @@ def login(
     )
 
     return {"access_token" : access_token, "token_type": "bearer"}
+
 

@@ -1,9 +1,10 @@
 from typing import Annotated
 from ulid import ULID
 from datetime import datetime
-from fastapi import HTTPException, Depends, status
+from fastapi import HTTPException, Depends, status, BackgroundTasks
 from dependency_injector.wiring import inject, Provide
 
+from user.application.email_service import EmailService
 from user.domain.user import User
 from user.domain.repository.user_repo import IUserRepository
 
@@ -16,18 +17,21 @@ class UserService:
     @inject
     def __init__(
             self,
+            email_service: EmailService,
             user_repo: IUserRepository = Depends(
                 Provide["user_repo"] 
-                ),
+                ),            
             ):
         # 현재 합성 방식으로 구현, 나중에 의존성 주입 방식으로 수정. 
         print("의존성 주입 테스트")
         self.user_repo =user_repo
         self.ulid = ULID()
         self.crypto = Crypto()
+        self.email_service = email_service
 
     def create_user(
             self,
+            background_tasks: BackgroundTasks,
             name: str,
             email: str,
             password: str,
@@ -64,6 +68,10 @@ class UserService:
             updated_at= now,
         )
         self.user_repo.save(user) # user_repo의 save 매서드를 이용하여 user 변수에 할당된 객체를 저장. 
+
+        # TODO: 백그라운드 태스크로 이메일 발송 기능 체크
+        # send_func = self.email_service.send_email
+        # background_tasks.add_task(lambda: self.email_service.send_email(receiver_email=user.email))
 
         return user
     
