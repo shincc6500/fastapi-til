@@ -36,7 +36,7 @@ class NoteService:
             memo_date: str,
             tag_names: list[str] = [],
     ) -> Note:
-        now = datetime.now
+        now = datetime.now()
 
         tags = [
             Tag(

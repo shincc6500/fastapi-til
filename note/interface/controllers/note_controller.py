@@ -30,7 +30,7 @@ class CreateNoteBody(BaseModel):
     )
 
 class GetNotesResponse(BaseModel):
-    totla_count: int
+    total_count: int
     page: int
     notes: list[NoteResponse]
 

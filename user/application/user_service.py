@@ -95,7 +95,7 @@ class UserService:
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found")
+                detail="유저를 찾을 수 없습니다")
 
         self.user_repo.delete(user_id)
 
