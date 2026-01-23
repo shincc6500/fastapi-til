@@ -104,3 +104,21 @@ Infra       : 데이터베이스 구현체(SQLAlchemy) 및 외부 시스템 연�
    - **원인**: Application에서 가공한 객체를 Infra 계층에서 다시 수동으로 매핑하며 평문 데이터가 유입됨.
    - **해결**: (단기) 매핑 로직을 암호화 필드 중심으로 수정함.
    - **향후 계획**: `db.merge()` 방식을 도입하여 객체 상태가 DB에 그대로 반영되도록 구조 개선 예정.
+
+### 3. celery 사용한 백그라운드 이메일 전송 오류
+   
+**현상**
+   - RabbitMQ 로그에 user 'guest' - invalid credentials 에러 반복 발생.
+
+   - 설정을 하드코딩하거나 .env를 수정해도 브로커 접속 시도가 root가 아닌 기본값(guest)으로 고정됨.
+
+   - 브로커 연결 성공 후에도 메일 전송 시 SMTPAuthenticationError (535) 발생.
+
+**원인 및 해결**
+   1. **celery app 인스턴스 참조 문제**  
+      - **원인**: UserService에서 SendWelcomeEmailTask().run(user.email)를 사용하여 직접 호출하면서 프로젝트에서 생성한 설정을 포함한 celery 객체를 거치지 않고 기본값을 사용함.   
+      - **해결**: 설정이 완료된 celery 객체를 명시적으로 임포트하여 celery.send_task()를 통해 등록된 함수를 호출함.  
+
+   2. **SMTPAuthenticationError (535) 발생**  
+      - **원인**: SMTP 서버 로그인 시 사용하는 계정명(Email)이 실제 환경과 불일치. (교재 예제에 적힌 이메일 주소를 그대로 사용하여 Google SMTP 서버 인증에 실패)
+      - **해결**: sender_email 변수를 실제 발신 권한이 있는 본인의 구글 이메일 주소로 수정하여 해결.

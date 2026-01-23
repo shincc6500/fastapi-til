@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     # email 서비스
     EMAIL_PASSWORD: str
 
+    # celery 서비스
+    CELERY_BROKER_URL : str
+    CELERY_BACKEND_URL : str
+
 settings = Settings()
 
 @lru_cache

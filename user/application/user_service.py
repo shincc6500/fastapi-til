@@ -1,12 +1,14 @@
 from typing import Annotated
 from ulid import ULID
 from datetime import datetime
-from fastapi import HTTPException, Depends, status, BackgroundTasks
+from fastapi import HTTPException, Depends, status
 from dependency_injector.wiring import inject, Provide
 
 from user.application.email_service import EmailService
 from user.domain.user import User
 from user.domain.repository.user_repo import IUserRepository
+# from user.application.send_welcome_email_task import SendWelcomeEmailTask
+from common.messaging import celery
 
 from utils.crypto import Crypto
 from common.auth import create_access_token, Role
@@ -30,8 +32,7 @@ class UserService:
         self.email_service = email_service
 
     def create_user(
-            self,
-            background_tasks: BackgroundTasks,
+            self,            
             name: str,
             email: str,
             password: str,
@@ -70,8 +71,8 @@ class UserService:
         self.user_repo.save(user) # user_repo의 save 매서드를 이용하여 user 변수에 할당된 객체를 저장. 
 
         # TODO: 백그라운드 태스크로 이메일 발송 기능 체크
-        # send_func = self.email_service.send_email
-        # background_tasks.add_task(lambda: self.email_service.send_email(receiver_email=user.email))
+        # SendWelcomeEmailTask().delay(user.email)
+        celery.send_task("send_welcome_email_task", args=[user.email])
 
         return user
     
