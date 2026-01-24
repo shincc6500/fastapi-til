@@ -28,6 +28,9 @@ class CurrentUser:
     id : str
     role: Role
 
+    def __set__(self):
+        return f"{self.id}({self.role})"
+
 # TODO: 단일 책임 위해 리팩토링
 def create_access_token(
         payload: dict,

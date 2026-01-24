@@ -6,8 +6,11 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 from containers import Container
+from middlewares import create_middlewares
 from user.interface.controllers import user_controller
 from note.interface.controllers import note_controller
+from example.ch11_01.middleware import create_sample_middleware
+from example.ch11_01.context_sample import router as context_ex_router
 
 container = Container()
 
@@ -22,7 +25,10 @@ app.container= container
 
 app.include_router(user_controller.router)
 app.include_router(note_controller.router)
+app.include_router(context_ex_router)
 
+create_sample_middleware(app)
+create_middlewares(app)
 
 @app.exception_handler(RequestValidationError) # RequestValidationError 발생시 에러 핸들러 등록
 async def validation_exception_handler(
